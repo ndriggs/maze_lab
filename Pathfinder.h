@@ -13,7 +13,8 @@ class Pathfinder : public PathfinderInterface
 {
 private:
     int current_maze[5][5][5];
-    
+    bool has_maze = false;
+    vector<string> p;
 public:
 	Pathfinder();
 	~Pathfinder();
@@ -90,4 +91,5 @@ public:
 	*/
 	vector<string> solveMaze();
 	//-----------------------------------------------------------------------------------------
+	bool findPath(int x, int y, int z);
 };

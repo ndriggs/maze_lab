@@ -5,8 +5,11 @@ using namespace std;
 
 int main(){
     Pathfinder p;
-    p.createRandomMaze();
-    string mze = p.toString();
-    cout << mze << endl;
+    bool t = p.importMaze("Solvable1.txt");
+    if(t){
+        cout << "It worked!" << endl;
+    } else{
+        cout << "Let's give it one more try!" << endl;
+    }
     return 0;
 }

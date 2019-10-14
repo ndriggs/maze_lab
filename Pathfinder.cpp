@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <fstream>
 using namespace std;
 
 
@@ -10,7 +11,9 @@ using namespace std;
 WARNING: It is expressly forbidden to modify any part of this document, including its name
 */
 
-Pathfinder::Pathfinder() {}
+Pathfinder::Pathfinder() {
+    has_maze = false;
+}
 Pathfinder::~Pathfinder() {}
 
 //Part 1-----------------------------------------------------------------------------------
@@ -38,7 +41,10 @@ string Pathfinder::toString() const {
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
             for(int k = 0; k < 5; k++){
-                write_to_maze_str << current_maze[i][j][k] << " ";
+                if(has_maze)
+                    write_to_maze_str << current_maze[i][j][k] << " ";
+                else
+                    write_to_maze_str << 1 << " ";
             }
             if((i != 4) || (j != 4)){
                 write_to_maze_str << endl;
@@ -72,6 +78,7 @@ void Pathfinder::createRandomMaze(){
     }
     current_maze[0][0][0] = 1;
     current_maze[4][4][4] = 1;
+    has_maze = true;
 }
 //-----------------------------------------------------------------------------------------
 
@@ -91,7 +98,32 @@ void Pathfinder::createRandomMaze(){
 *				True if the maze is imported correctly; false otherwise
 */
 bool Pathfinder::importMaze(string file_name){
-    return true;
+    ifstream maze_file(file_name);
+    int zeros_and_ones_count = 0;
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            for(int k = 0; k < 5; k++){
+                if(!maze_file.eof()){
+                    zeros_and_ones_count += 1;
+                }
+                maze_file >> current_maze[i][j][k];
+                cout << "cm[" << i << "][" << j << "][" << k << "] = " << current_maze[i][j][k] << endl;
+                if((current_maze[i][j][k] != 0) && (current_maze[i][j][k] != 1)){
+                    has_maze = false;
+                    maze_file.close();
+                    return false;
+                }
+            }
+        }
+    }
+    cout << zeros_and_ones_count << endl;
+    cout << current_maze[0][0][0] << endl << current_maze[4][4][4] << endl;
+    if((current_maze[0][0][0] == 1) && (current_maze[4][4][4] == 1) && (zeros_and_ones_count == 125)){
+        cout << "made it to where has maze is true" << endl;
+        has_maze = true;
+        maze_file.close();
+        return true;
+    }
 }
 //-----------------------------------------------------------------------------------------
 
@@ -114,6 +146,44 @@ bool Pathfinder::importMaze(string file_name){
 *				A solution to the current maze, or an empty vector if none exists
 */
 vector<string> Pathfinder::solveMaze(){
-    return vector<string> ();
+    findPath(0, 0, 0);
+    return p;
+}
+
+bool Pathfinder::findPath(int x, int y, int z){
+    stringstream ss;
+    ss << "(" << x << ", " << y << ", " << z << ")";
+    p.push_back(ss.str());
+    if((x < 0) || (x > 4) || (y < 0) || (y > 4) || (z < 0) || (z > 4)){ // out of bounds
+        p.pop_back();
+        return false;
+    }
+    if(current_maze[x][y][z] == 0){ // hit a wall
+        p.pop_back();
+        return false;
+    }
+    if(current_maze[x][y][z] == 2){ // been here before
+        p.pop_back();
+        return false;
+    }
+    if((x == 4) && (y == 4) && (z == 4)){
+        return true;
+    }
+    
+    current_maze[x][y][z] = 2; // mark we've been here
+    
+    bool down = findPath(x, y, z + 1);
+    bool east = findPath(x + 1, y, z);
+    bool south = findPath(x, y + 1, z);
+    bool west = findPath(x - 1, y, z);
+    bool up = findPath(x, y, z - 1);
+    bool north = findPath(x, y - 1, z);
+    
+    if(down || east || south || west || up || north){
+        return true; // there's a way out
+    }else {
+        p.pop_back();
+        return false;
+    }
 }
 //-----------------------------------------------------------------------------------------
