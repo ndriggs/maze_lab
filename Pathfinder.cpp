@@ -107,7 +107,7 @@ bool Pathfinder::importMaze(string file_name){
                     zeros_and_ones_count += 1;
                 }
                 maze_file >> current_maze[i][j][k];
-                cout << "cm[" << i << "][" << j << "][" << k << "] = " << current_maze[i][j][k] << endl;
+                //cout << "cm[" << i << "][" << j << "][" << k << "] = " << current_maze[i][j][k] << endl;
                 if((current_maze[i][j][k] != 0) && (current_maze[i][j][k] != 1)){
                     has_maze = false;
                     maze_file.close();
