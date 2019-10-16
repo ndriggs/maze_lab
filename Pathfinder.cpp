@@ -42,17 +42,17 @@ string Pathfinder::toString() const {
         for(int j = 0; j < 5; j++){
             for(int k = 0; k < 5; k++){
                 if(has_maze)
-                    write_to_maze_str << current_maze[i][j][k] << " ";
+                    write_to_maze_str << current_maze[i][j][k];
                 else
-                    write_to_maze_str << 1 << " ";
+                    write_to_maze_str << 1;
+                if(k != 4)
+                    write_to_maze_str << " ";
             }
             if((i != 4) || (j != 4)){
                 write_to_maze_str << endl;
             }
         }
-        if(i != 4){
-            write_to_maze_str << endl;
-        }
+        write_to_maze_str << endl;
         
     }
     return write_to_maze_str.str();
@@ -100,25 +100,42 @@ void Pathfinder::createRandomMaze(){
 bool Pathfinder::importMaze(string file_name){
     ifstream maze_file(file_name);
     int zeros_and_ones_count = 0;
+    int temp_maze[5][5][5];
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
             for(int k = 0; k < 5; k++){
                 if(!maze_file.eof()){
                     zeros_and_ones_count += 1;
                 }
-                maze_file >> current_maze[i][j][k];
+                //int current_location;
+                maze_file >> temp_maze[i][j][k];
                 //cout << "cm[" << i << "][" << j << "][" << k << "] = " << current_maze[i][j][k] << endl;
-                if((current_maze[i][j][k] != 0) && (current_maze[i][j][k] != 1)){
+                if((temp_maze[i][j][k] != 0) && (temp_maze[i][j][k] != 1)){
                     has_maze = false;
                     maze_file.close();
                     return false;
-                }
+                } else if((i == 0) && (j == 0) && (k == 0) && (temp_maze[i][j][k] != 1)){ // checks if first spot is valid
+                    has_maze = false;
+                    maze_file.close();
+                    return false;
+                } else if((i == 4) && (j == 4) && (k == 4) && (temp_maze[i][j][k] != 1)){ // checks if last spot is valid
+                    has_maze = false;
+                    maze_file.close();
+                    return false;
+                } 
             }
         }
     }
     cout << zeros_and_ones_count << endl;
-    cout << current_maze[0][0][0] << endl << current_maze[4][4][4] << endl;
-    if((current_maze[0][0][0] == 1) && (current_maze[4][4][4] == 1) && (zeros_and_ones_count == 125)){
+    cout << temp_maze[0][0][0] << endl << temp_maze[4][4][4] << endl;
+    if((temp_maze[0][0][0] == 1) && (temp_maze[4][4][4] == 1) && (zeros_and_ones_count == 125)){
+        for(int i = 0; i < 5; i++){
+            for(int j = 0; j < 5; j++){
+                for(int k = 0; k < 5; k++){
+                    current_maze[i][j][k] = temp_maze[i][j][k];
+                }
+            }
+        }
         cout << "made it to where has maze is true" << endl;
         has_maze = true;
         maze_file.close();
