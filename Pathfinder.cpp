@@ -13,6 +13,7 @@ WARNING: It is expressly forbidden to modify any part of this document, includin
 
 Pathfinder::Pathfinder() {
     has_maze = false;
+    srand(time(NULL));
 }
 Pathfinder::~Pathfinder() {}
 
@@ -68,7 +69,7 @@ string Pathfinder::toString() const {
 * solvable or unsolvable, and this method should be able to produce both kinds of mazes.
 */
 void Pathfinder::createRandomMaze(){
-    srand(time(NULL));
+    
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
             for(int k = 0; k < 5; k++){
@@ -98,6 +99,7 @@ void Pathfinder::createRandomMaze(){
 *				True if the maze is imported correctly; false otherwise
 */
 bool Pathfinder::importMaze(string file_name){
+    
     ifstream maze_file(file_name);
     int zeros_and_ones_count = 0;
     int temp_maze[5][5][5];
@@ -111,20 +113,20 @@ bool Pathfinder::importMaze(string file_name){
                 maze_file >> temp_maze[i][j][k];
                 //cout << "cm[" << i << "][" << j << "][" << k << "] = " << current_maze[i][j][k] << endl;
                 if((temp_maze[i][j][k] != 0) && (temp_maze[i][j][k] != 1)){
-                    has_maze = false;
                     maze_file.close();
                     return false;
                 } else if((i == 0) && (j == 0) && (k == 0) && (temp_maze[i][j][k] != 1)){ // checks if first spot is valid
-                    has_maze = false;
                     maze_file.close();
                     return false;
                 } else if((i == 4) && (j == 4) && (k == 4) && (temp_maze[i][j][k] != 1)){ // checks if last spot is valid
-                    has_maze = false;
                     maze_file.close();
                     return false;
                 } 
             }
         }
+    }
+    if(maze_file.eof() == false){
+        return false;
     }
     cout << zeros_and_ones_count << endl;
     cout << temp_maze[0][0][0] << endl << temp_maze[4][4][4] << endl;
