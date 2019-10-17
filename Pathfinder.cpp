@@ -165,6 +165,13 @@ bool Pathfinder::importMaze(string file_name){
 *				A solution to the current maze, or an empty vector if none exists
 */
 vector<string> Pathfinder::solveMaze(){
+    for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 5; j++){
+            for(int k = 0; k < 5; k++){
+                temp[k][j][i] = current_maze[k][j][i]; //%%%%%
+            }///%%%%%%% need to switch up those xyz's and ijk's
+        }
+    }
     findPath(0, 0, 0);
     return p;
 }
@@ -177,19 +184,19 @@ bool Pathfinder::findPath(int x, int y, int z){
         p.pop_back();
         return false;
     }
-    if(current_maze[x][y][z] == 0){ // hit a wall
+    if(temp[x][y][z] == 0){ // hit a wall
         p.pop_back();
         return false;
     }
-    if(current_maze[x][y][z] == 2){ // been here before
+    if(temp[x][y][z] == 2){ // been here before
         p.pop_back();
         return false;
     }
-    if((x == 4) && (y == 4) && (z == 4)){
+    if((x == 4) && (y == 4) && (z == 4)){ //reached the end of the maze
         return true;
     }
     
-    current_maze[x][y][z] = 2; // mark we've been here
+    temp[x][y][z] = 2; // mark we've been here
     
     bool down = findPath(x, y, z + 1);
     bool east = findPath(x + 1, y, z);

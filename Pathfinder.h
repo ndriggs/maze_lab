@@ -15,6 +15,7 @@ private:
     int current_maze[5][5][5];
     bool has_maze = false;
     vector<string> p;
+    int temp[5][5][5];
 public:
 	Pathfinder();
 	~Pathfinder();
