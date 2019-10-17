@@ -43,7 +43,7 @@ string Pathfinder::toString() const {
         for(int j = 0; j < 5; j++){
             for(int k = 0; k < 5; k++){
                 if(has_maze)
-                    write_to_maze_str << current_maze[i][j][k];
+                    write_to_maze_str << current_maze[k][j][i];
                 else
                     write_to_maze_str << 1;
                 if(k != 4)
@@ -73,7 +73,7 @@ void Pathfinder::createRandomMaze(){
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
             for(int k = 0; k < 5; k++){
-                current_maze[i][j][k] = rand() % 2;
+                current_maze[k][j][i] = rand() % 2;
             }
         }
     }
@@ -110,15 +110,15 @@ bool Pathfinder::importMaze(string file_name){
                     zeros_and_ones_count += 1;
                 }
                 //int current_location;
-                maze_file >> temp_maze[i][j][k];
+                maze_file >> temp_maze[k][j][i];
                 //cout << "cm[" << i << "][" << j << "][" << k << "] = " << current_maze[i][j][k] << endl;
-                if((temp_maze[i][j][k] != 0) && (temp_maze[i][j][k] != 1)){
+                if((temp_maze[k][j][i] != 0) && (temp_maze[k][j][i] != 1)){
                     maze_file.close();
                     return false;
-                } else if((i == 0) && (j == 0) && (k == 0) && (temp_maze[i][j][k] != 1)){ // checks if first spot is valid
+                } else if((i == 0) && (j == 0) && (k == 0) && (temp_maze[k][j][i] != 1)){ // checks if first spot is valid
                     maze_file.close();
                     return false;
-                } else if((i == 4) && (j == 4) && (k == 4) && (temp_maze[i][j][k] != 1)){ // checks if last spot is valid
+                } else if((i == 4) && (j == 4) && (k == 4) && (temp_maze[k][j][i] != 1)){ // checks if last spot is valid
                     maze_file.close();
                     return false;
                 } 
@@ -134,7 +134,7 @@ bool Pathfinder::importMaze(string file_name){
         for(int i = 0; i < 5; i++){
             for(int j = 0; j < 5; j++){
                 for(int k = 0; k < 5; k++){
-                    current_maze[i][j][k] = temp_maze[i][j][k];
+                    current_maze[k][j][i] = temp_maze[k][j][i];
                 }
             }
         }
@@ -165,6 +165,7 @@ bool Pathfinder::importMaze(string file_name){
 *				A solution to the current maze, or an empty vector if none exists
 */
 vector<string> Pathfinder::solveMaze(){
+    p.clear();
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
             for(int k = 0; k < 5; k++){
@@ -198,14 +199,7 @@ bool Pathfinder::findPath(int x, int y, int z){
     
     temp[x][y][z] = 2; // mark we've been here
     
-    bool down = findPath(x, y, z + 1);
-    bool east = findPath(x + 1, y, z);
-    bool south = findPath(x, y + 1, z);
-    bool west = findPath(x - 1, y, z);
-    bool up = findPath(x, y, z - 1);
-    bool north = findPath(x, y - 1, z);
-    
-    if(down || east || south || west || up || north){
+    if(findPath(x, y, z + 1) || findPath(x + 1, y, z) || findPath(x, y + 1, z) || findPath(x - 1, y, z) || findPath(x, y, z - 1) || findPath(x, y - 1, z)){
         return true; // there's a way out
     }else {
         p.pop_back();
